@@ -15,8 +15,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.0.1")),
-        .package(url: "https://github.com/horizontalsystems/UIExtensions.Swift.git", .upToNextMajor(from: "1.0.0")),
-        .package(url: "https://github.com/horizontalsystems/HSExtensions.Swift.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/DexSAFE/UIExtensions.Swift.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/DexSAFE/HSExtensions.Swift.git", .upToNextMajor(from: "1.0.0")),
     ],
     targets: [
         .target(
