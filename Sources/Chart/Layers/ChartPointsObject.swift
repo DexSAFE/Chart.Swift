@@ -33,7 +33,7 @@ class ChartPointsObject: NSObject, IChartObject {
     public var padding: UIEdgeInsets = .zero
     public var bottomInset: CGFloat = .zero
 
-    var layer: CALayer { // layer which will be added to chart
+    var layer: CALayer {                                        // layer which will be added to chart
         fatalError("Must be implemented by Concrete subclass.")
     }
 
@@ -41,7 +41,7 @@ class ChartPointsObject: NSObject, IChartObject {
         pathDirection == .bottom ? layer.bounds.height - bottomInset : bottomInset
     }
 
-    var animationLayer: CALayer { // layer which will be used to animation
+    var animationLayer: CALayer {                               // layer which will be used to animation
         layer
     }
 
@@ -80,7 +80,7 @@ class ChartPointsObject: NSObject, IChartObject {
         ShapeHelper.linePath(points: points)
     }
 
-    func update(start: Bool = false, old: [CGPoint], new: [CGPoint], duration: CFTimeInterval?, timingFunction _: CAMediaTimingFunction?) {
+    func update(start: Bool = false, old: [CGPoint], new: [CGPoint], duration: CFTimeInterval?, timingFunction: CAMediaTimingFunction?) {
         guard let animationLayer = animationLayer as? CAShapeLayer else {
             return
         }
@@ -90,18 +90,18 @@ class ChartPointsObject: NSObject, IChartObject {
     func update(layer: CAShapeLayer, start: Bool = false, old: [CGPoint], new: [CGPoint], duration: CFTimeInterval?, timingFunction: CAMediaTimingFunction?) {
         layer.path = path(points: new)
 
-        guard let duration else {
+        guard let duration = duration else {
             return
         }
 
         let animation: CAAnimation?
-        if start { // if its first appearing animation, use animation style
+        if start {     // if its first appearing animation, use animation style
             animation = appearingAnimation(new: new, duration: duration, timingFunction: timingFunction)
         } else {
             animation = transformAnimation(oldPath: path(points: old), new: new, duration: duration, timingFunction: timingFunction)
         }
 
-        if let animation {
+        if let animation = animation {
             layer.add(animation, forKey: animationKey)
         }
     }
@@ -115,9 +115,9 @@ class ChartPointsObject: NSObject, IChartObject {
             let oldPath = path(points: new.map { CGPoint(x: $0.x, y: zeroY) })
 
             return ShapeHelper.animation(keyPath: "path", from: oldPath,
-                                         to: newPath,
-                                         duration: duration,
-                                         timingFunction: timingFunction)
+                    to: newPath,
+                    duration: duration,
+                    timingFunction: timingFunction)
         }
     }
 
@@ -125,9 +125,9 @@ class ChartPointsObject: NSObject, IChartObject {
         let newPath = path(points: new)
 
         return ShapeHelper.animation(keyPath: "path", from: oldPath,
-                                     to: newPath,
-                                     duration: duration,
-                                     timingFunction: timingFunction)
+                to: newPath,
+                duration: duration,
+                timingFunction: timingFunction)
     }
 
     func updateFrame(in bounds: CGRect, duration: CFTimeInterval?, timingFunction: CAMediaTimingFunction?) {
@@ -136,6 +136,7 @@ class ChartPointsObject: NSObject, IChartObject {
         let new = absolute(points: points)
 
         update(old: old, new: new,
-               duration: duration, timingFunction: timingFunction)
+                duration: duration, timingFunction: timingFunction)
     }
+
 }

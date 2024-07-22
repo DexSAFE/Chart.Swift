@@ -45,7 +45,8 @@ class ChartText: IChartObject {
         textLayer.string = text
     }
 
-    func updateFrame(in bounds: CGRect, duration _: CFTimeInterval?, timingFunction _: CAMediaTimingFunction?) {
+    func updateFrame(in bounds: CGRect, duration: CFTimeInterval?, timingFunction: CAMediaTimingFunction?) {
         layer.frame = LayerFrameHelper.frame(insets: insets, size: size, in: bounds)
     }
+
 }

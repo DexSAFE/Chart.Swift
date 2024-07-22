@@ -1,6 +1,6 @@
-import HsExtensions
-import UIExtensions
 import UIKit
+import UIExtensions
+import HsExtensions
 
 public class ChartIndicator: Codable {
     var _class: String
@@ -9,6 +9,7 @@ public class ChartIndicator: Codable {
     public var enabled: Bool
     public let onChart: Bool
     public let single: Bool
+
 
     init(id: String, index: Int, enabled: Bool, onChart: Bool, single: Bool) {
         _class = String(describing: Self.self)
@@ -44,23 +45,27 @@ public class ChartIndicator: Codable {
         fatalError("must be overridden by subclass")
     }
 
-    static func json(from object: some Encodable) throws -> String {
+    static func json<T: Encodable>(from object: T) throws -> String {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .sortedKeys
 
         let data = try encoder.encode(object)
         return String(decoding: data, as: UTF8.self)
     }
+
 }
 
 extension ChartIndicator: Equatable {
-    public static func == (lhs: ChartIndicator, rhs: ChartIndicator) -> Bool {
+
+    public static func ==(lhs: ChartIndicator, rhs: ChartIndicator) -> Bool {
         lhs.json == rhs.json
     }
+
 }
 
-public extension ChartIndicator {
-    enum AbstractType: String {
+extension ChartIndicator {
+
+    public enum AbstractType: String {
         case invalid
         case ma
         case macd
@@ -68,16 +73,16 @@ public extension ChartIndicator {
         case precalculated
     }
 
-    enum Category: CaseIterable {
+    public enum Category: CaseIterable {
         case movingAverage
         case oscillator
     }
 
-    enum InitializeError: Error {
+    public enum InitializeError: Error {
         case wrongIndicatorClass
     }
 
-    struct LineConfiguration: Codable, Equatable {
+    public struct LineConfiguration: Codable, Equatable {
         public let color: ChartColor
         public let width: CGFloat
 
@@ -86,13 +91,15 @@ public extension ChartIndicator {
             self.width = width
         }
 
-        public static var `default`: LineConfiguration {
+        static public var `default`: LineConfiguration {
             LineConfiguration(color: ChartColor(.blue), width: 1)
         }
 
-        public static func == (lhs: LineConfiguration, rhs: LineConfiguration) -> Bool {
+        public static func ==(lhs: LineConfiguration, rhs: LineConfiguration) -> Bool {
             lhs.color.hex == rhs.color.hex &&
                 lhs.width == rhs.width
         }
+
     }
+
 }

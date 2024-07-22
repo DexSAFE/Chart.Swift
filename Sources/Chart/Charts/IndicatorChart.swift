@@ -14,7 +14,7 @@ class IndicatorChart: Chart {
         add(volumeBars)
         add(horizontalLines)
 
-        if let configuration {
+        if let configuration = configuration {
             apply(configuration: configuration)
         }
     }
@@ -71,4 +71,5 @@ class IndicatorChart: Chart {
     func setHorizontalLines(hidden: Bool) {
         horizontalLines.layer.isHidden = hidden
     }
+
 }

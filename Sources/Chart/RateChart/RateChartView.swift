@@ -1,5 +1,5 @@
-import SnapKit
 import UIKit
+import SnapKit
 
 public protocol IChartViewTouchDelegate: AnyObject {
     func touchDown()
@@ -85,31 +85,28 @@ public class RateChartView: UIView {
         return self
     }
 
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
+
+    required init?(coder: NSCoder) {
         fatalError("not implemented")
     }
 
-    @discardableResult public func set(chartData: ChartData, indicators: [ChartIndicator] = [], showIndicators: Bool = true, limitFormatter: ((Decimal) -> String?)? = nil, animated: Bool = true) -> [IndicatorFactory.CalculatingError] {
+    @discardableResult public func set(chartData: ChartData, indicators: [ChartIndicator] = [], showIndicators: Bool = true, animated: Bool = true) -> [IndicatorFactory.CalculatingError] {
         // 1. calculate all indicators and add it to chartData
         let factory = IndicatorFactory()
         let calculatingErrors = factory.store(indicators: indicators, chartData: chartData)
 
         // 2. convert real values to visible points from 0..1 by x&y
-        let ranges = RelativeConverter.ranges(chartData: chartData, indicators: indicators, showIndicators: showIndicators)
-        let converted = RelativeConverter.relative(chartData: chartData, ranges: ranges)
+        let converted = RelativeConverter.convert(chartData: chartData, indicators: indicators, showIndicators: showIndicators)
 
         // 3. set points for rate and volume
         if let points = converted[ChartData.rate] {
-            mainChart.set(curveRange: ranges[ChartData.rate])
             mainChart.set(points: points, animated: animated)
             chartTouchArea.set(points: points)
         }
-
         indicatorChart.set(volumes: converted[ChartData.volume], animated: animated)
 
         // 4. get diff to update all chartIndicator layers
-        let updatedIds = indicators.map(\.json)
+        let updatedIds = indicators.map { $0.json }
 
         // 4a. remove unused viewModels and apply visibility
         for model in viewModels {
@@ -157,12 +154,9 @@ public class RateChartView: UIView {
             }
         }
 
-        // 4c. check volume visibility: show always if indicators is hidden, or show when no indicators on indicator layer enabled
+        //4c. check volume visibility: show always if indicators is hidden, or show when no indicators on indicator layer enabled
         let hasVisibleOffChainIndicator = viewModels.contains { viewModel in !viewModel.onChart && !viewModel.isHidden }
         indicatorChart.setVolumes(hidden: hasVisibleOffChainIndicator && showIndicators)
-
-        let rateRange = ranges[ChartData.rate]
-        mainChart.set(highLimitText: rateRange.flatMap { limitFormatter?($0.max) }, lowLimitText: rateRange.flatMap { limitFormatter?($0.min) })
 
         return calculatingErrors
     }
@@ -184,7 +178,7 @@ public class RateChartView: UIView {
         mainChart.setVerticalLines(points: positions)
         indicatorChart.setVerticalLines(points: positions)
 
-        timelineChart.set(texts: timeline.map(\.text), positions: positions)
+        timelineChart.set(texts: timeline.map { $0.text }, positions: positions)
     }
 
     public func setVolumes(hidden: Bool) {
@@ -194,9 +188,15 @@ public class RateChartView: UIView {
     public func setLimits(hidden: Bool) {
         mainChart.setLimits(hidden: hidden)
     }
+
+    public func set(highLimitText: String?, lowLimitText: String?) {
+        mainChart.set(highLimitText: highLimitText, lowLimitText: lowLimitText)
+    }
+
 }
 
 extension RateChartView: ITouchAreaDelegate {
+
     func touchDown() {
         isPressed = true
         mainChart.setLine(colorType: .pressed)
@@ -208,8 +208,8 @@ extension RateChartView: ITouchAreaDelegate {
     func select(at index: Int) {
         guard let data = chartData,
               index < data.visibleItems.count,
-              let item = chartData?.visibleItems[index]
-        else {
+              let item = chartData?.visibleItems[index] else {
+
             return
         }
 
@@ -223,4 +223,5 @@ extension RateChartView: ITouchAreaDelegate {
 
         delegate?.touchUp()
     }
+
 }

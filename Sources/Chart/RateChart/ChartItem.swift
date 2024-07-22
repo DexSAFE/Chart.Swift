@@ -15,11 +15,11 @@ public class ChartItem: Comparable {
         return self
     }
 
-    public static func < (lhs: ChartItem, rhs: ChartItem) -> Bool {
+    static public func <(lhs: ChartItem, rhs: ChartItem) -> Bool {
         lhs.timestamp < rhs.timestamp
     }
 
-    public static func == (lhs: ChartItem, rhs: ChartItem) -> Bool {
+    static public func ==(lhs: ChartItem, rhs: ChartItem) -> Bool {
         lhs.timestamp == rhs.timestamp
     }
 }

@@ -40,4 +40,5 @@ class ChartLine: ChartPointsObject {
 
         lineLayer.fillColor = nil
     }
+
 }

@@ -59,9 +59,10 @@ class ChartBorder: IChartObject {
         return path.cgPath
     }
 
-    func updateFrame(in bounds: CGRect, duration _: CFTimeInterval?, timingFunction _: CAMediaTimingFunction?) {
+    func updateFrame(in bounds: CGRect, duration: CFTimeInterval?, timingFunction: CAMediaTimingFunction?) {
         borderLayer.frame = LayerFrameHelper.frame(insets: insets, size: size, in: bounds)
 
         borderLayer.path = path()
     }
+
 }

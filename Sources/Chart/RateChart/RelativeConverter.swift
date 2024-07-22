@@ -1,6 +1,6 @@
 import UIKit
 
-class ChartRange {
+private class ChartRange {
     var min: Decimal
     var max: Decimal
 
@@ -10,12 +10,11 @@ class ChartRange {
     }
 
     var all: [Decimal] { [min, max] }
-    var minPositive: Bool { min >= 0 }
-    var maxPositive: Bool { max >= 0 }
 }
 
-enum RelativeConverter {
-    private static func allRanges(chartData: ChartData, indicators _: [ChartIndicator]) -> [String: ChartRange] {
+class RelativeConverter {
+
+    private static func allRanges(chartData: ChartData, indicators: [ChartIndicator]) -> [String: ChartRange] {
         var ranges = [String: ChartRange]()
 
         let visibleItems = chartData.visibleItems
@@ -38,7 +37,7 @@ enum RelativeConverter {
         return ranges
     }
 
-    static func ranges(chartData: ChartData, indicators: [ChartIndicator], showIndicators: Bool) -> [String: ChartRange] {
+    static private func ranges(chartData: ChartData, indicators: [ChartIndicator], showIndicators: Bool) -> [String: ChartRange] {
         var ranges = allRanges(chartData: chartData, indicators: indicators)
 
         // for rate and all MA indicator find extremum values
@@ -48,8 +47,8 @@ enum RelativeConverter {
         }
 
         let maIds = indicators
-            .filter { $0.abstractType == .ma }
-            .map(\.json)
+                .filter { $0.abstractType == .ma }
+                .map { $0.json }
 
         if showIndicators {
             for id in maIds {
@@ -73,16 +72,16 @@ enum RelativeConverter {
 
         // set 0..100 for every rsi
         let rsiIds = indicators
-            .filter { $0.abstractType == .rsi }
-            .map(\.json)
+                .filter { $0.abstractType == .rsi }
+                .map { $0.json }
 
         let rsiRange = ChartRange(min: 0, max: 100)
         rsiIds.forEach { ranges[$0] = rsiRange }
 
         // merge ranges for macd : to show all lines and zoom histogram to maximum
         let macdIds = indicators
-            .filter { $0.abstractType == .macd }
-            .map(\.json)
+                .filter { $0.abstractType == .macd }
+                .map { $0.json }
 
         for id in macdIds {
             let signalId = MacdIndicator.MacdType.signal.name(id: id)
@@ -106,7 +105,7 @@ enum RelativeConverter {
         return ranges
     }
 
-    static func relative(chartData: ChartData, ranges: [String: ChartRange]) -> [String: [CGPoint]] {
+    static private func relative(chartData: ChartData, ranges: [String: ChartRange]) -> [String: [CGPoint]] {
         let timestampDelta = chartData.endWindow - chartData.startWindow
         guard !timestampDelta.isZero else {
             return [:]
@@ -116,13 +115,13 @@ enum RelativeConverter {
         for item in chartData.visibleItems {
             let timestamp = item.timestamp - chartData.startWindow
             let x = CGFloat(timestamp / timestampDelta)
+
             for (key, value) in item.indicators {
                 guard let range = ranges[key] else {
                     continue
                 }
 
                 let delta = range.max - range.min
-
                 let y = delta == 0 ? 0.5 : ((value - range.min) / delta).cgFloatValue
                 let point = CGPoint(x: x, y: y)
 
@@ -140,4 +139,12 @@ enum RelativeConverter {
 
         return relativeData
     }
+
+    static func convert(chartData: ChartData, indicators: [ChartIndicator], showIndicators: Bool) -> [String: [CGPoint]] {
+        // calculate ranges for all data
+        let indicatorRanges = ranges(chartData: chartData, indicators: indicators, showIndicators: showIndicators)
+        // make relative points
+        return relative(chartData: chartData, ranges: indicatorRanges)
+    }
+
 }

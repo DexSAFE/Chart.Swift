@@ -26,14 +26,15 @@ public struct ChartIndicators: Codable {
             let _class = try object.decode(String.self, forKey: ObjectTypeKey._class)
             switch _class {
             case String(describing: MaIndicator.self):
-                try indicators.append(array.decode(MaIndicator.self))
+                indicators.append(try array.decode(MaIndicator.self))
             case String(describing: RsiIndicator.self):
-                try indicators.append(array.decode(RsiIndicator.self))
+                indicators.append(try array.decode(RsiIndicator.self))
             case String(describing: MacdIndicator.self):
-                try indicators.append(array.decode(MacdIndicator.self))
+                indicators.append(try array.decode(MacdIndicator.self))
             default: ()
             }
         }
         self.indicators = indicators
     }
+
 }

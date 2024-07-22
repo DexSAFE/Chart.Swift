@@ -1,6 +1,7 @@
 import UIKit
 
 extension Date {
+
     var startOfHour: Date? {
         let components = Calendar.current.dateComponents([.year, .month, .day, .hour], from: self)
         return Calendar.current.date(from: components)
@@ -24,15 +25,17 @@ extension Date {
         var components = DateComponents()
         components.month = -ago
 
-        guard let startOfMonth else {
+        guard let startOfMonth = startOfMonth else {
             return nil
         }
         return Calendar.current.date(byAdding: components, to: startOfMonth)
     }
+
 }
 
-public extension Decimal {
-    var integerDigitCount: Int {
+extension Decimal {
+
+    public var integerDigitCount: Int {
         var value = abs(self)
         var count = 1
         while value >= 10 {
@@ -42,13 +45,16 @@ public extension Decimal {
         return count
     }
 
-    var cgFloatValue: CGFloat {
+    public var cgFloatValue: CGFloat {
         CGFloat(truncating: self as NSNumber)
     }
+
 }
 
-public extension CGFloat {
-    var decimalValue: Decimal {
+extension CGFloat {
+
+    public var decimalValue: Decimal {
         (self as NSNumber).decimalValue
     }
+
 }

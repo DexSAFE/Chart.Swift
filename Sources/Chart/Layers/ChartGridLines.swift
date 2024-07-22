@@ -27,7 +27,6 @@ class ChartGridLines: ChartPointsObject {
             linesLayer.strokeColor = strokeColor.cgColor
         }
     }
-
     override var fillColor: UIColor {
         didSet {
             linesLayer.fillColor = fillColor.cgColor
@@ -80,9 +79,8 @@ class ChartGridLines: ChartPointsObject {
         let offset = retinaCorrected ? LayerFrameHelper.offset(lineWidth: width) : 0
 
         for point in points {
-            if let invisibleIndent, // if point closer than ignoring size, dont show line
-               (point.x <= layer.bounds.origin.x + invisibleIndent) || (point.x >= layer.bounds.width - invisibleIndent)
-            {
+            if let invisibleIndent = invisibleIndent,     // if point closer than ignoring size, dont show line
+               (point.x <= layer.bounds.origin.x + invisibleIndent) || (point.x >= layer.bounds.width - invisibleIndent) {
                 continue
             }
             let correctedPoint = retinaCorrected ? CGPoint(x: ceil(point.x) + offset, y: ceil(point.y) + offset) : point

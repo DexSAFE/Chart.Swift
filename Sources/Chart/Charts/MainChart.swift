@@ -13,8 +13,7 @@ class MainChart: Chart {
 
     private static func curve(type: ChartConfiguration.CurveType?) -> ChartPointsObject {
         switch type {
-        case .bars: return ChartBars()
-        case .histogram: return ChartHistogram()
+        case .bars:return ChartBars()
         default: return ChartLine()
         }
     }
@@ -34,7 +33,7 @@ class MainChart: Chart {
         add(highLimitText)
         add(lowLimitText)
 
-        if let configuration {
+        if let configuration = configuration {
             apply(configuration: configuration)
         }
     }
@@ -86,6 +85,7 @@ class MainChart: Chart {
             verticalLines.invisibleIndent = configuration.verticalInvisibleIndent
         }
 
+
         updateUI()
 
         return self
@@ -98,7 +98,7 @@ class MainChart: Chart {
     }
 
     private func updateUI() {
-        guard let configuration else {
+        guard let configuration = configuration else {
             return
         }
 
@@ -112,26 +112,6 @@ class MainChart: Chart {
         lowLimitText.textColor = configuration.limitTextColor
     }
 
-    func set(curveRange: ChartRange?) {
-        // need to change historgam 0 line position
-        guard let curveRange else { return }
-        guard let curve = curve as? ChartHistogram else { return }
-        if curveRange.minPositive == curveRange.maxPositive {
-            // all points under 0-value
-            curve.verticalSplitValue = curveRange.minPositive ? 0 : 1
-            return
-        }
-
-        let fullRange = curveRange.max - curveRange.min
-
-        guard !fullRange.isZero else {
-            curve.verticalSplitValue = 0.5
-            return
-        }
-
-        curve.verticalSplitValue = (abs(curveRange.min) / fullRange).cgFloatValue
-    }
-
     func set(points: [CGPoint], animated: Bool = false) {
         curve.set(points: points, animated: animated)
         gradient.set(points: points, animated: animated)
@@ -143,24 +123,14 @@ class MainChart: Chart {
     }
 
     func setLine(colorType: ChartColorType) {
-        guard let configuration else {
+        guard let configuration = configuration else {
             return
         }
 
         curve.strokeColor = colorType.curveColor(configuration: configuration)
-        if let curve = curve as? ChartBars {
+        if configuration.curveType == .bars {
             curve.fillColor = colorType.curveColor(configuration: configuration)
         }
-        if let curve = curve as? ChartHistogram {
-            if colorType.isPressed {
-                curve.positiveBarFillColor = configuration.pressedColor
-                curve.negativeBarFillColor = configuration.pressedColor
-            } else {
-                curve.positiveBarFillColor = configuration.trendUpColor
-                curve.negativeBarFillColor = configuration.trendDownColor
-            }
-        }
-
         gradient.gradientColors = zip(colorType.gradientColors(configuration: configuration), configuration.gradientAlphas).map { $0.withAlphaComponent($1) }
         gradient.gradientLocations = configuration.gradientLocations
     }
@@ -182,6 +152,7 @@ class MainChart: Chart {
     func setVerticalLines(hidden: Bool) {
         verticalLines.layer.isHidden = hidden
     }
+
 }
 
 public enum ChartColorType {
@@ -205,7 +176,4 @@ public enum ChartColorType {
         }
     }
 
-    var isPressed: Bool {
-        self == .pressed
-    }
 }

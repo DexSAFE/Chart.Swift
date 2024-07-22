@@ -4,7 +4,7 @@ public class RsiIndicator: ChartIndicator {
     public let period: Int
     public let configuration: ChartIndicator.LineConfiguration
 
-    private enum CodingKeys: String, CodingKey {
+    private enum CodingKeys : String, CodingKey {
         case period
         case type
         case configuration
@@ -21,7 +21,7 @@ public class RsiIndicator: ChartIndicator {
         period
     }
 
-    override public var category: Category {
+    public override var category: Category {
         .oscillator
     }
 
@@ -32,17 +32,18 @@ public class RsiIndicator: ChartIndicator {
         try super.init(from: decoder)
     }
 
-    override public func encode(to encoder: Encoder) throws {
+    public override func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(period, forKey: .period)
         try container.encode(configuration, forKey: .configuration)
         try super.encode(to: encoder)
     }
 
-    public static func == (lhs: RsiIndicator, rhs: RsiIndicator) -> Bool {
+    public static func ==(lhs: RsiIndicator, rhs: RsiIndicator) -> Bool {
         lhs.id == rhs.id &&
-            lhs.index == rhs.index &&
-            lhs.period == rhs.period &&
-            lhs.configuration == rhs.configuration
+                lhs.index == rhs.index &&
+                lhs.period == rhs.period &&
+                lhs.configuration == rhs.configuration
     }
+
 }

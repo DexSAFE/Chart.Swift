@@ -1,11 +1,11 @@
 import UIKit
 
 class ChartLineConfiguration {
-    public var lineColor: UIColor = .blue
+    public var lineColor: UIColor = UIColor.blue
     public var lineWidth: CGFloat = 1
 
     public var animationDuration: TimeInterval = 0.35
-    public var padding: UIEdgeInsets = .init(top: 18, left: 0, bottom: 18, right: 0)
+    public var padding: UIEdgeInsets = UIEdgeInsets(top: 18, left: 0, bottom: 18, right: 0)
     public var bottomInset: CGFloat = 0
 
     static func configured(_ configuration: ChartConfiguration, onChart: Bool) -> ChartLineConfiguration {
@@ -16,6 +16,7 @@ class ChartLineConfiguration {
         config.bottomInset = onChart ? configuration.curveBottomInset : 0
         return config
     }
+
 }
 
 class ChartLineViewModel: ChartViewModel {
@@ -52,7 +53,8 @@ class ChartLineViewModel: ChartViewModel {
         maLine.layer.isHidden = hidden
     }
 
-    override func set(selected _: Bool) {
+    override func set(selected: Bool) {
         // don't change colors
     }
+
 }
